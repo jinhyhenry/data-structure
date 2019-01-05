@@ -1,8 +1,9 @@
 #include "stdlib.h"
 #include "stdio.h"
-#include "return.h"
+#include "common_define.h"
 #include "list.h"
 #include "stack.h"
+#include "stack_limit.h"
 
 static enum StdRet test_entry_list(void)
 {
@@ -103,19 +104,71 @@ static enum StdRet test_entry_stack(void)
 	return OK;
 }
 
+static enum StdRet test_entry_stack_limit(void)
+{
+	int databuf[4] = {2,4,8,12};
+	void *data;
+	struct list_head *node;
+	struct stack_limit *stack = (struct stack_limit*)malloc(sizeof(struct stack_limit));
+	RETURN_ON_NULL(stack);
+
+	stack->stack_size = 4;
+	stack_limit_init(stack);
+
+	if(stack_limit_push(stack,databuf,STACK_DIR_LEFT) != OK)
+	{
+		printf("Push to Left Fail!\n");
+		return NG;
+	}
+	if(stack_limit_push(stack,databuf+1,STACK_DIR_LEFT) != OK)
+	{
+		printf("Push to Right Fail!\n");
+		return NG;
+	}
+
+	printf("travel L begin\n");
+	lstack_limit_for_each_entry(node,stack)
+	{
+		if(!node->data)
+		{
+			continue;
+		}
+		printf("%d\n", *((int *)(node->data)));
+	}
+	printf("travel L end\n");
+
+	if(stack_limit_pop(stack,&data,STACK_DIR_LEFT) != OK)
+	{
+		printf("Pop From Left Fail!\n");
+		return NG;
+	}
+	else
+		printf("pop left %d\n", *((int *)(data)));
+
+	return OK;
+}
+
 int main()
 {
 	if(test_entry_list() != OK)
 	{
 		printf("Error!\n");
 	}
-	printf("List Test Pass!\n");
+	else
+		printf("List Test Pass!\n");
 
 	if(test_entry_stack() != OK)
 	{
 		printf("Error!\n");
 	}
-	printf("Stack Test Pass!\n");
+	else
+		printf("Stack Test Pass!\n");
 
+	if(test_entry_stack_limit() != OK)
+	{
+		printf("Error\n");
+	}
+	else
+		printf("Stack Limit Test Pass!\n");
 	return 0;
 }

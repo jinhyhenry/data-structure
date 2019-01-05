@@ -9,6 +9,12 @@ enum StdRet {
 	NG,
 	TIME_OUT,
 	NULL_PTR,
+	OVER_FLOW,
 };
+
+#define TRUE 1
+#define FALSE 0
+
+typedef unsigned char BOOL;
 
 #endif
