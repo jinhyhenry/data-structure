@@ -4,6 +4,7 @@
 #include "list.h"
 #include "stack.h"
 #include "stack_limit.h"
+#include "queue.h"
 
 static enum StdRet test_entry_list(void)
 {
@@ -148,6 +149,35 @@ static enum StdRet test_entry_stack_limit(void)
 	return OK;
 }
 
+static enum StdRet test_entry_queue(void)
+{
+	int i;
+	int databuf[4] = {2,4,8,12};
+	struct list_head *node;
+	struct list_head *queue = (struct list_head *)malloc(sizeof(struct list_head));
+	INIT_QUEUE_HEAD(queue);
+
+	if(QUEUE_EMPTY(queue))
+		printf("Empty, Pass\n");
+
+	for(i=0;i<4;i++)
+	{
+		node = (struct list_head *)malloc(sizeof(struct list_head));
+		node->data = databuf + i;
+		ENQUEUE(node,queue);
+	}
+
+	printf("DEQUEUE Begin\n");
+	for(i=0;i<4;i++)
+	{
+		DEQUEUE(queue,&node);
+		printf("%d\n",*((int *)(node->data)));
+	}
+	printf("DEQUEUE End\n");
+
+	return OK;
+}
+
 int main()
 {
 	if(test_entry_list() != OK)
@@ -170,5 +200,12 @@ int main()
 	}
 	else
 		printf("Stack Limit Test Pass!\n");
+
+	if(test_entry_queue() != OK)
+	{
+		printf("Error\n");
+	}
+	else
+		printf("Queue Test Pass!\n");
 	return 0;
 }
